@@ -1,0 +1,16 @@
+{
+  "name": "vue-comments",
+  "version": "0.0.1",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Yuriy Martini",
+      "email": "y.martini@soluzionesoftware.com",
+      "url": "https://github.com/yuriy-martini"
+    }
+  ],
+  "main": "src/index.js",
+  "peerDependencies": {
+    "vue": "^2.6"
+  }
+}
