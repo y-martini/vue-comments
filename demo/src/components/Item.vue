@@ -5,6 +5,7 @@
         </div>
         <div class="media-body">
             <h4 class="media-heading">{{ comment.commenter.name }}</h4>
+            vote: {{ comment.vote }}
             <p>{{ comment.message }}</p>
             <button
                     v-if="canEdit"

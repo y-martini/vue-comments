@@ -5,45 +5,34 @@ export default {
             type: Array,
             required: true,
         },
-        commenter: {
-            type: Object,
-            required: true,
-        },
     },
     model: {
         prop: 'comments',
     },
     watch: {
         comments(v){
-            this.comments_ = this.fillId(v);
+            this.model = v ? this.fillId(v) : [];
         },
     },
     mounted() {
-        this.comments_ = this.fillId(this.comments);
+        this.model = this.fillId(this.comments);
     },
     data(){
         return {
-            comments_: [],
+            model: [],
         }
     },
     methods: {
         /**
-         * @param {string} message
+         * @param {Object} model
          * @param {Object|null} parent
-         * @param {Object|null} comment
          */
-        submit({message, parent = null, comment}){
-            if (comment){
-                this.updateComment(comment, message);
+        submit({model, parent = null}){
+            if (model.id__){
+                this.updateComment(model);
             }
             else {
-                let comment = {
-                    id__: this.generateId(),
-                    commenter: this.commenter,
-                    message,
-                    children: [],
-                };
-                this.insertComment(comment, parent);
+                this.insertComment(model, parent);
             }
         },
 
@@ -53,30 +42,29 @@ export default {
          */
         insertComment(comment, parent = null){
             if (parent){
-                this.comments_ = this.insert(this.comments_, parent, comment);
+                this.model = this.insert(this.model, parent, comment);
             }
             else {
-                this.comments_.push(comment);
+                this.model.push(comment);
             }
 
-            this.$emit('input', this.comments_);
+            this.$emit('input', this.model);
         },
 
         /**
          * @param {Object} comment
-         * @param {string} message
          */
-        updateComment(comment, message){
-            this.comments_ = this.update(this.comments, comment, message);
-            this.$emit('input', this.comments_);
+        updateComment(comment){
+            this.model = this.update(this.comments, comment);
+            this.$emit('input', this.model);
         },
 
         /**
          * @param {Object} comment
          */
         removeComment(comment){
-            this.comments_ = this.remove(this.comments, comment);
-            this.$emit('input', this.comments_);
+            this.model = this.remove(this.comments, comment);
+            this.$emit('input', this.model);
         },
 
         insert(comments, parent, comment){
@@ -95,14 +83,14 @@ export default {
                 });
         },
 
-        update(comments, comment, message){
+        update(comments, comment){
             return comments
                 .map(item => {
                     if (item.id__ === comment.id__){
-                        item.message = message;
+                        item = comment;
                     }
                     else {
-                        item.children = this.update(item.children, comment, message)
+                        item.children = this.update(item.children, comment)
                     }
 
                     return item;

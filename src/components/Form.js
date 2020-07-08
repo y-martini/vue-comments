@@ -5,6 +5,12 @@ export default {
             type: [Object, null],
             default: null,
         },
+        emptyComment: {
+            type: Object,
+            default: () => {
+                return {};
+            },
+        },
         parent: {
             type: [Object, null],
             default: null,
@@ -12,13 +18,13 @@ export default {
     },
     data(){
         return {
-            message: null,
+            model: null,
         }
     },
     watch: {
         comment(v){
             if (v){
-                this.message = v.message;
+                this.model = {...v};
             }
             else {
                 this.reset();
@@ -27,27 +33,27 @@ export default {
     },
     methods: {
         submit(){
-            this.$emit('submit', {parent: this.parent, comment: this.comment, message: this.message});
+            this.$emit('submit', {parent: this.parent, comment: this.comment, model: this.model});
             this.reset();
         },
         reset(){
-            this.message = null;
+            this.model = this.emptyComment;
+            this.model.children = this.model.children || [];
         },
     },
 
     render() {
+        if (!this.model){
+            this.reset();
+        }
+
         return this.$scopedSlots.default({
             parent: this.parent,
             comment: this.comment,
-            message: this.message,
-            submit: this.submit,
+            model: this.model,
 
-            attrs: {
-                value: this.message,
-            },
-            events: {
-                input: e => this.message = e.target.value,
-            },
+            input: (prop, value) => this.model[prop] = value,
+            submit: this.submit,
         });
     },
 }

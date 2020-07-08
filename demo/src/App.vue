@@ -1,6 +1,6 @@
 <template>
   <div>
-    <comments ref="comments" v-model="comments" :commenter="commenter">
+    <comments ref="comments" v-model="comments">
       <div>
         <list
                 :comments="comments"
@@ -10,6 +10,8 @@
         />
 
         <comments-form
+                ref="form"
+                :commenter="commenter"
                 :parent="replyComment"
                 :comment="formComment"
                 @submit="onFormSubmit"
@@ -23,12 +25,12 @@
 </template>
 
 <script>
-import {Comments} from "../../src";
-import Form from "./components/Form";
-import List from "./components/List";
-import { LoremIpsum } from "lorem-ipsum";
+  import {Comments} from "../../src";
+  import Form from "./components/Form";
+  import List from "./components/List";
+  import {LoremIpsum} from "lorem-ipsum";
 
-const LOREM_IPSUM = new LoremIpsum();
+  const LOREM_IPSUM = new LoremIpsum();
 
 const COMMENTER_NAME = 'Yuriy Martini';
 const NAMES = [
@@ -83,11 +85,11 @@ export default {
 
       let name = NAMES[Math.floor(NAMES.length * Math.random())];
       return {
-        id: Math.round(Math.random() * 999999),
         commenter: {
           name,
           avatar: this.getAvatar(name),
         },
+        vote: Math.floor(Math.random() * 5) + 1,
         message: LOREM_IPSUM.generateSentences(3),
         children: this.generateComments(maxLevel, level + 1),
       }
@@ -96,9 +98,11 @@ export default {
       return 'https://api.adorable.io/avatars/48/' + name.toString().toLowerCase().trim().replace(/[\s\W-]+/g, '-')  + '@adorable.io.png';
     },
     onEdit(comment){
+      this.replyComment = null;
       this.formComment = comment;
     },
     onReply(comment){
+      this.formComment = null;
       this.replyComment = comment;
     },
     onDelete(comment){
@@ -108,8 +112,10 @@ export default {
       this.replyComment = null;
     },
     onFormSubmit(args){
-      this.formComment = this.replyComment = null;
+      this.formComment = null;
+      this.replyComment = null;
       this.$refs.comments.submit(args);
+      this.$refs.form.reset();
     },
   }
 }
