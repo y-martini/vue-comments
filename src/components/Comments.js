@@ -111,7 +111,7 @@ export default {
                 .map(item => {
                     item.id__ = item.id__ || this.generateId();
 
-                    item.children = this.fillId(item.children);
+                    item.children = this.fillId(item.children || []);
 
                     return item;
                 });
